@@ -117,6 +117,12 @@ export default class AddEditCompany extends Component {
                         ))}
                     </ul>
                 </form>
+                <button onClick={() => {
+                    localStorage.removeItem('admin')
+                    this.props.history.push(
+                        '/'
+                    )
+                }}>Logout of Admin</button>
             </div>
         )
     }

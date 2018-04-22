@@ -72,7 +72,7 @@ export default class AdminLogin extends Component {
                         }
                     </div>
                 )
-                : <AdminPortal />
+                : <AdminPortal history={this.props.history} />
 
         )
     }

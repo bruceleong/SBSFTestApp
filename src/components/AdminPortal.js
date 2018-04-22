@@ -35,6 +35,7 @@ export default class AdminPortal extends Component {
     }
 
     render() {
+        console.log(this.props, 'current props')
         return (
             !this.state.selectedCompany
                 ?
@@ -43,6 +44,12 @@ export default class AdminPortal extends Component {
                         <h1>Would you like to add a new company or edit an existing one?</h1>
                         <button type="button" onClick={this.onAdd}>Add Company</button>
                         <button type="button" onClick={this.onEdit}>Edit Company</button>
+                        <button onClick={() => {
+                            localStorage.removeItem('admin')
+                            this.props.history.push(
+                                '/'
+                            )
+                        }}>Logout of Admin</button>
                         {
                             !this.state.edit
                                 ? null
@@ -62,7 +69,7 @@ export default class AdminPortal extends Component {
                         }
                     </div>
                 )
-                : (<AddEditCompany company={this.state.selectedCompany} />)
+                : (<AddEditCompany company={this.state.selectedCompany} history={this.props.history} />)
         )
     }
 }
