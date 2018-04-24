@@ -8,14 +8,15 @@ export default class AddEditCompany extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            companyName: '',
+            dynamicCompanyName: '',
             companyProvider: '',
             companyData: [],
             spd: '',
             companyFormName: '',
             companyFormUrl: '',
             changesSubmitted: false,
-            adding: true
+            adding: true,
+            staticCompanyName: this.props.company
         }
         //exists to make load time a little faster
 
@@ -42,33 +43,40 @@ export default class AddEditCompany extends Component {
 
     formHandleSubmit = evt => {
         evt.preventDefault()
-        db.collection('companies').doc(this.state.companyName).collection('Forms')
+        db.collection('companies').doc(this.state.dynamicCompanyName).collection('Forms')
             .doc('formDoc')
             .set({ [evt.target.companyFormName.value]: evt.target.companyFormUrl.value }, { merge: true })
         console.log('firestore form has been set')
-        let newCompanyData = this.state.companyData.concat([evt.target.companyFormName.value, evt.target.companyFormUrl.value])
         this.setState({
             companyFormName: '',
-            companyFormUrl: '',
-            companyData: newCompanyData
+            companyFormUrl: ''
         })
         console.log('in formHandleSubmit')
+        this.updateCompanyData()
     }
 
     updateCompanyProfile = (evt) => {
+
+        console.log('arguments', arguments)
         evt.preventDefault()
-        db.collection('companies').doc(this.state.companyName)
-            .set({ providerName: this.state.companyProvider, spd: this.state.spd, name: this.state.companyName, providerWebsite: this.state.providerWebsite }, { merge: true })
+        db.collection('companies').doc(this.state.dynamicCompanyName)
+            .set({ providerName: this.state.companyProvider, spd: this.state.spd, name: this.state.dynamicCompanyName, providerWebsite: this.state.providerWebsite }, { merge: true })
             .then(() => this.updateCompanyData())
+
+        // let newName = this.state.dynamicCompanyName
+
+        this.setState({ staticCompanyName: evt.target.dynamicCompanyName.value })
+
+        //this.props.company = this.state.companyName
 
     }
 
     updateCompanyData = () => {
         console.log('in updateComanyData')
 
-        if (this.props.company !== 'newCompany') {
+        if (this.state.staticCompanyName !== 'newCompany') {
 
-            let companyRef = db.collection('companies').doc(this.props.company)
+            let companyRef = db.collection('companies').doc(this.state.staticCompanyName)
 
             companyRef.collection('Forms').doc('formDoc')
                 .get()
@@ -81,7 +89,7 @@ export default class AddEditCompany extends Component {
                             companyData.push([key, formObj[key]])
                         })
                     }
-                    return { companyData, companyName: this.props.company }
+                    return { companyData, dynamicCompanyName: this.state.staticCompanyName }
 
                 })
                 .then(data => {
@@ -91,7 +99,7 @@ export default class AddEditCompany extends Component {
                             //spd is now required so ignore error that comes up when spd is not defined
                             let spd = doc.data().spd
 
-                            this.setState({ companyData: data.companyData, companyName: data.companyName, companyProvider: doc.data().providerName, providerWebsite: doc.data().providerWebsite, spd, adding: false })
+                            this.setState({ companyData: data.companyData, dynamicCompanyName: data.dynamicCompanyName, companyProvider: doc.data().providerName, providerWebsite: doc.data().providerWebsite, spd, adding: false })
                         })
                 })
         }
@@ -103,14 +111,14 @@ export default class AddEditCompany extends Component {
             !this.state.formToUpdate
                 ?
                 <div>
-                    <h2>{this.state.companyName} Company Info</h2>
-                    <h3>Company Name: {this.state.companyName}</h3>
+                    <h2>{this.state.dynamicCompanyName} Company Info</h2>
+                    <h3>Company Name: {this.state.dynamicCompanyName}</h3>
                     <h3>Company Provider: {this.state.companyProvider}</h3>
                     <h3>Company Provider Website: {this.state.providerWebsite}</h3>
                     <a target="_blank" rel="noopener noreferrer" href={this.state.spd}><h3>Summary Plan Description:  {this.state.spd}</h3></a>
                     <form onSubmit={this.updateCompanyProfile}>
                         <label style={{display: 'block', margin: '10px'}} htmlFor="companyName">Company Name:<input
-                            name="companyName" value={this.state.companyName}
+                            name="dynamicCompanyName" value={this.state.dynamicCompanyName}
                             required
                             onChange={this.handleChange} />
                         </label>
@@ -184,7 +192,7 @@ export default class AddEditCompany extends Component {
                                                         type='button'
                                                         onClick={
                                                             () => {
-                                                                db.collection('companies').doc(this.state.companyName).collection('Forms')
+                                                                db.collection('companies').doc(this.state.dynamicCompanyName).collection('Forms')
                                                                 .doc('formDoc')
                                                                 .update({
                                                                     [ele[0]]: firebase.firestore.FieldValue.delete()
@@ -212,7 +220,7 @@ export default class AddEditCompany extends Component {
                 </div>
                 :
                 (
-                    <EditForm formToUpdate={this.state.formToUpdate} formURL={this.state.formURL} company={this.state.companyName} returnLink={this.props.returnLink} returnToSelectedCompany={this.props.returnToSelectedCompany} removeFormToUpdate={this.removeFormToUpdate} history={this.props.history} />
+                    <EditForm formToUpdate={this.state.formToUpdate} formURL={this.state.formURL} company={this.state.dynamicCompanyName} returnLink={this.props.returnLink} returnToSelectedCompany={this.props.returnToSelectedCompany} removeFormToUpdate={this.removeFormToUpdate} history={this.props.history} />
                 )
         )
     }
