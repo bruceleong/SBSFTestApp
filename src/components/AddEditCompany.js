@@ -17,6 +17,16 @@ export default class AddEditCompany extends Component {
             companyFormUrl: '',
             changesSubmitted: false
         }
+
+        this.state.formPropsContainer = {
+            formHandleSubmit: this.formHandleSubmit,
+            handleChange: this.handleChange,
+            editForm: this.editForm,
+            companyFormName: this.state.companyFormName,
+            companyFormUrl: this.state.companyFormUrl,
+            companyData: this.state.companyData,
+            updateCompanyData: this.updateCompanyData
+        }
     }
 
     componentDidMount() {
@@ -93,7 +103,9 @@ export default class AddEditCompany extends Component {
         return (
             !this.state.formToUpdate
                 ?
-                <div>
+                <AddEditCompanyData />
+
+                {/*<div>
                     <h2>{this.state.companyName} Company Info</h2>
                     <h3>Company Name: {this.state.companyName}</h3>
                     <h3>Company Provider: {this.state.companyProvider}</h3>
@@ -137,11 +149,12 @@ export default class AddEditCompany extends Component {
                               </h1>
                             </div>
                         }
-                    </form>
+                    </form>*/}
                     {
                         !this.props.adding
                             ?
-                            <div>
+                            <AddEditCompanyForms container={this.state.formPropsContainer} />
+                            {/*<div>
                                 <h2>Company Forms</h2>
                                 <form onSubmit={this.formHandleSubmit}>
                                     <h3>Add new Forms</h3>
@@ -189,7 +202,7 @@ export default class AddEditCompany extends Component {
                                         ))
                                     }
                                 </ul>
-                            </div>
+                                </div>*/}
                             : ''
                     }
                     <button type="button" onClick={() => { this.props.returnLink() }}>Back to Admin Home</button>
@@ -199,7 +212,7 @@ export default class AddEditCompany extends Component {
                             '/'
                         )
                     }}>Logout of Admin</button>
-                </div>
+                {/*</div>*/}
                 :
                 (
                     <EditForm formToUpdate={this.state.formToUpdate} formURL={this.state.formURL} company={this.state.companyName} returnLink={this.props.returnLink} returnToSelectedCompany={this.props.returnToSelectedCompany} removeFormToUpdate={this.removeFormToUpdate} history={this.props.history} />
