@@ -6,7 +6,9 @@ import { Link } from 'react-router-dom'
 export default class AdminPortal extends Component {
     constructor() {
         super()
-        this.state = {}
+        this.state = {
+            allCompanies: []
+        }
     }
 
     handleSubmit = evt => {
