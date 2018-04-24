@@ -3,7 +3,7 @@ import { db } from '../config/constants'
 import firebase from 'firebase'
 require('firebase/firestore')
 
-const AddEditCompany = (props) => (
+const AddEditCompanyForms = (props) => (
 
     <div>
         <h2>Company Forms</h2>
@@ -24,7 +24,7 @@ const AddEditCompany = (props) => (
         <h3>Current Forms:</h3>
         <ul>
             {
-                props.container.companyData.map((ele, idx) => (
+                props.container.companyData.map( ele => (
                     <div key={ele[0]}>
                         <br />
                         <p>Name of form: <a target="_blank" href={ele[1]} style={{ display: 'inline' }}>
@@ -34,19 +34,14 @@ const AddEditCompany = (props) => (
                             {ele[1]}
                         </a></p>
                         <button
-                            type='button'
+                            type="button"
                             onClick={() => props.container.editForm(ele[0], ele[1])}>Edit Link
                         </button>
                         <button
-                            type='button'
-                            onClick={
-                                () => {
-                                    db.collection('companies').doc(props.container.companyName).collection('Forms').doc('formDoc').update({
-                                        [ele[0]]: firebase.firestore.FieldValue.delete()
-                                    })
-                                    props.container.updateCompanyData()
-                                }
-                            }>Delete Form</button>
+                            type="button"
+                            onClick={() => props.container.deleteForm(ele[0])}>
+                            Delete Form
+                        </button>
                         <br />
                         <br />
                     </div>
@@ -57,7 +52,7 @@ const AddEditCompany = (props) => (
 
 )
 
-export default AddEditCompany
+export default AddEditCompanyForms
 
 // function AddEditCompany(props){
     

@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { db } from '../config/constants'
 import EditForm from './EditForm.jsx'
 import firebase from 'firebase'
+import AddEditCompanyData from './AddEditCompanyData'
+import AddEditCompanyForms from './AddEditCompanyForms'
 require('firebase/firestore');
 
 export default class AddEditCompany extends Component {
@@ -18,14 +20,24 @@ export default class AddEditCompany extends Component {
             changesSubmitted: false
         }
 
-        this.state.formPropsContainer = {
+        this.formPropsContainer = {
             formHandleSubmit: this.formHandleSubmit,
             handleChange: this.handleChange,
             editForm: this.editForm,
             companyFormName: this.state.companyFormName,
             companyFormUrl: this.state.companyFormUrl,
             companyData: this.state.companyData,
-            updateCompanyData: this.updateCompanyData
+            updateCompanyData: this.updateCompanyData,
+            deleteForm: this.deleteForm
+        }
+        this.dataPropsContainer = {
+            companyName: this.state.companyName,
+            companyProvider: this.state.companyProvider,
+            spd: this.state.spd,
+            providerWebsite: this.state.providerWebsite,
+            updateCompanyProfile: this.updateCompanyProfile,
+            handleChange: this.handleChange,
+            submitChanges: this.submitChanges
         }
     }
 
@@ -42,8 +54,17 @@ export default class AddEditCompany extends Component {
         this.updateCompanyData()
     }
 
-    handleChange = evt => {
-        this.setState({ [evt.target.name]: evt.target.value })
+
+    submitChanges = () => {
+        this.setState({ changesSubmitted: !this.state.changesSubmitted})
+    }
+
+
+    handleChange = (evt, blah) => {
+        console.log('in handle change', 'evt', evt, 'blah', blah )
+        console.log('evt.target', evt.target, )
+
+        this.setState({ [evt.target.name]:  blah})
     }
 
     formHandleSubmit = evt => {
@@ -65,6 +86,16 @@ export default class AddEditCompany extends Component {
             .then(() => {
                 this.updateCompanyData()
             })
+
+    }
+
+    deleteForm = (key) => {
+        db.collection('companies').doc(this.state.companyName).collection('Forms')
+        .doc('formDoc')
+        .update({
+            [key]: firebase.firestore.FieldValue.delete()
+        })
+        this.state.updateCompanyData()
 
     }
 
@@ -103,9 +134,34 @@ export default class AddEditCompany extends Component {
         return (
             !this.state.formToUpdate
                 ?
-                <AddEditCompanyData />
+                <div>
+                    <AddEditCompanyData container={this.dataPropsContainer}/>
+                        {
+                            !this.props.adding
+                                ?
+                                <AddEditCompanyForms container={this.formPropsContainer} />
+                                : ''
+                        }
+                    <button type="button" onClick={() => { this.props.returnLink() }}>Back to Admin Home</button>
+                    <button onClick={() => {
+                        localStorage.removeItem('admin')
+                        this.props.history.push(
+                            '/'
+                        )
+                    }}>Logout of Admin
+                    </button>
+                </div>
+                :
+                    <EditForm formToUpdate={this.state.formToUpdate} formURL={this.state.formURL} company={this.state.companyName} returnLink={this.props.returnLink} returnToSelectedCompany={this.props.returnToSelectedCompany} removeFormToUpdate={this.removeFormToUpdate} history={this.props.history} /> 
+            )
+    }
+}
 
-                {/*<div>
+
+
+
+
+{/*<div>
                     <h2>{this.state.companyName} Company Info</h2>
                     <h3>Company Name: {this.state.companyName}</h3>
                     <h3>Company Provider: {this.state.companyProvider}</h3>
@@ -150,11 +206,10 @@ export default class AddEditCompany extends Component {
                             </div>
                         }
                     </form>*/}
-                    {
-                        !this.props.adding
-                            ?
-                            <AddEditCompanyForms container={this.state.formPropsContainer} />
-                            {/*<div>
+
+
+
+ {/*<div>
                                 <h2>Company Forms</h2>
                                 <form onSubmit={this.formHandleSubmit}>
                                     <h3>Add new Forms</h3>
@@ -203,20 +258,3 @@ export default class AddEditCompany extends Component {
                                     }
                                 </ul>
                                 </div>*/}
-                            : ''
-                    }
-                    <button type="button" onClick={() => { this.props.returnLink() }}>Back to Admin Home</button>
-                    <button onClick={() => {
-                        localStorage.removeItem('admin')
-                        this.props.history.push(
-                            '/'
-                        )
-                    }}>Logout of Admin</button>
-                {/*</div>*/}
-                :
-                (
-                    <EditForm formToUpdate={this.state.formToUpdate} formURL={this.state.formURL} company={this.state.companyName} returnLink={this.props.returnLink} returnToSelectedCompany={this.props.returnToSelectedCompany} removeFormToUpdate={this.removeFormToUpdate} history={this.props.history} />
-                )
-        )
-    }
-}
