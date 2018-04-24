@@ -68,7 +68,6 @@ export default class AddEditCompany extends Component {
 
         this.setState({ staticCompanyName: evt.target.dynamicCompanyName.value })
 
-
     }
 
     updateCompanyData = () => {
@@ -111,8 +110,8 @@ export default class AddEditCompany extends Component {
             !this.state.formToUpdate
                 ?
                 <div>
-                    <h2>{this.state.dynamicCompanyName} Company Info</h2>
-                    <h3>Company Name: {this.state.dynamicCompanyName}</h3>
+                    <h2>{this.state.staticCompanyName} Company Info</h2>
+                    <h3>Company Name: {this.state.staticCompanyName}</h3>
                     <h3>Company Provider: {this.state.companyProvider}</h3>
                     <h3>Company Provider Website: {this.state.providerWebsite}</h3>
                     <a target="_blank" rel="noopener noreferrer" href={this.state.spd}><h3>Summary Plan Description:  {this.state.spd}</h3></a>
