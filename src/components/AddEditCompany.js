@@ -42,32 +42,32 @@ export default class AddEditCompany extends Component {
     }
 
     formHandleSubmit = evt => {
+        
         evt.preventDefault()
+
+        let url = evt.target.companyFormUrl.value
+        if (url.startsWith('https://') === false && url.startsWith('http://') === false) url = 'https://' + url 
+
+
         db.collection('companies').doc(this.state.dynamicCompanyName).collection('Forms')
             .doc('formDoc')
-            .set({ [evt.target.companyFormName.value]: evt.target.companyFormUrl.value }, { merge: true })
-        console.log('firestore form has been set')
+            .set({ [evt.target.companyFormName.value]: url }, { merge: true })
         this.setState({
             companyFormName: '',
             companyFormUrl: ''
         })
-        console.log('in formHandleSubmit')
         this.updateCompanyData()
     }
 
     updateCompanyProfile = (evt) => {
 
-        console.log('arguments', arguments)
         evt.preventDefault()
         db.collection('companies').doc(this.state.dynamicCompanyName)
             .set({ providerName: this.state.companyProvider, spd: this.state.spd, name: this.state.dynamicCompanyName, providerWebsite: this.state.providerWebsite }, { merge: true })
             .then(() => this.updateCompanyData())
 
-        // let newName = this.state.dynamicCompanyName
-
         this.setState({ staticCompanyName: evt.target.dynamicCompanyName.value })
 
-        //this.props.company = this.state.companyName
 
     }
 
@@ -151,7 +151,7 @@ export default class AddEditCompany extends Component {
                     </form>
                     {
                         this.state.adding
-                            ? <h1>Lol, nope</h1>
+                            ? null
                             : (
                                 <div>
                                     <h2>Company Forms</h2>
