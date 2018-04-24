@@ -30,19 +30,21 @@ class Routes extends Component {
       <div className="container d-flex justify-content-center">
         <div className="row">
           <Switch>
-            <Route path="/" exact component={Home} />
-            <Route
-              path="/Login"
-              component={Login}
-            />
-            <Route
-              path="/Contact"
-              component={About}
-            />
-            <Route
-              path="/Admin"
-              component={AdminLogin}
-            />
+          {
+            !localStorage.getItem('admin')
+            ? null
+            : (
+              <div>
+              <Route
+                    path="/AddEditMedia"
+                    component={AddEditMedia}
+                  />
+                  <Route
+                    component={AdminPortal}
+                    />
+              </div>
+            )
+          }
             {
               !localStorage.getItem('company')
                 ? null
@@ -76,22 +78,28 @@ class Routes extends Component {
                       path="/Admin"
                       component={AdminLogin}
                     />
+                    <Route
+                      component={CompanyHome}
+                      />
                   </div>
                 )
             }
-            {
-              !localStorage.getItem('admin')
-              ? null
-              : (
-                <div>
-                <Route
-                      path="/AddEditMedia"
-                      component={AddEditMedia}
-                    />
-                </div>
-              )
-            }
-            <Route render={() => <h3>No Match</h3>} />
+            <Route path="/" exact component={Home} />
+            <Route
+              path="/Login"
+              component={Login}
+            />
+            <Route
+              path="/Contact"
+              component={About}
+            />
+            <Route
+              path="/Admin"
+              component={AdminLogin}
+            />
+            <Route
+              component={Home}
+              />
           </Switch>
         </div>
       </div>
