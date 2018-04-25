@@ -46,7 +46,7 @@ export default class AddEditCompany extends Component {
         evt.preventDefault()
 
         let url = evt.target.companyFormUrl.value
-        if (url.startsWith('https://') === false && url.startsWith('http://') === false) url = 'https://' + url 
+        if (url.startsWith('https://') === false && url.startsWith('http://') === false) url = 'https://' + url
 
 
         db.collection('companies').doc(this.state.dynamicCompanyName).collection('Forms')
@@ -61,12 +61,43 @@ export default class AddEditCompany extends Component {
 
     updateCompanyProfile = (evt) => {
 
-        evt.preventDefault()
-        db.collection('companies').doc(this.state.dynamicCompanyName)
-            .set({ providerName: this.state.companyProvider, spd: this.state.spd, name: this.state.dynamicCompanyName, providerWebsite: this.state.providerWebsite }, { merge: true })
-            .then(() => this.updateCompanyData())
+        console.log('in updateCompanyProfile')
 
-        this.setState({ staticCompanyName: evt.target.dynamicCompanyName.value })
+        evt.preventDefault()
+
+
+        if (this.state.staticCompanyName === this.state.dynamicCompanyName){
+            evt.preventDefault()
+            db.collection('companies').doc(this.state.staticCompanyName)
+                .set({ providerName: this.state.companyProvider, spd: this.state.spd, name: this.state.dynamicCompanyName, providerWebsite: this.state.providerWebsite }, { merge: true })
+                .then(() => this.updateCompanyData())
+
+            this.setState({ staticCompanyName: evt.target.dynamicCompanyName.value })
+        } else {
+            console.log('in the else')
+
+            let newCompanyRef = db.collection('companies').doc(this.state.dynamicCompanyName)
+
+            newCompanyRef
+                .set({ providerName: this.state.companyProvider, spd: this.state.spd, name: this.state.dynamicCompanyName, providerWebsite: this.state.providerWebsite }, { merge: true })
+                .then(() => {
+
+                    let obj = {}
+
+                    this.state.companyData.forEach((ele) => {
+                        obj[ele[0]] = ele[1]
+                    })
+
+                    console.log('about to set', obj)
+                    
+                    newCompanyRef.collection('Forms').doc('formDoc').set(obj)
+
+                })
+                .then(() => this.updateCompanyData())
+
+            db.collection('companies').doc(this.state.staticCompanyName).delete()
+
+        }
 
     }
 
