@@ -89,13 +89,14 @@ export default class AddEditCompany extends Component {
                     })
 
                     console.log('about to set', obj)
-                    
                     newCompanyRef.collection('Forms').doc('formDoc').set(obj)
 
                 })
-                .then(() => this.updateCompanyData())
+                //.then(() => this.updateCompanyData())
 
             db.collection('companies').doc(this.state.staticCompanyName).delete()
+            this.setState({ staticCompanyName: evt.target.dynamicCompanyName.value })
+
 
         }
 
